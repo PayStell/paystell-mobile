@@ -137,6 +137,9 @@ fun SignUpScreen(
                         onSignUpSuccess()
                     } catch (e: Exception) {
                         // Show network error
+                        println("Network error: ${e.message}")
+                        // In production, consider using a proper logging framework
+                        // or error tracking service like Crashlytics
                         showNetworkError = true
                     } finally {
                         isLoading = false

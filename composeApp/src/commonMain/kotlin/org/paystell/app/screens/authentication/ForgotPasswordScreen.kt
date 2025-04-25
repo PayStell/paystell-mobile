@@ -102,7 +102,8 @@ fun ForgotPasswordScreen(
                         delay(3000) // Show success message briefly
                         onResetRequestSent()
                     } catch (e: Exception) {
-                        // Show network error
+                        // Log the error and show network error dialog
+                        println("Password reset error: ${e.message}") // Replace with proper logging
                         showNetworkError = true
                     } finally {
                         isLoading = false

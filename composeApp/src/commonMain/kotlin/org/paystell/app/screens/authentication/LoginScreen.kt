@@ -67,25 +67,13 @@ fun LoginScreen(
         var showBiometricPrompt by remember { mutableStateOf(false) }
         
         fun validateInputs(): Boolean {
-            var isValid = true
+            val (isValid, errorMessage) = validateLoginInput(email, password)
             
-            val trimmedEmail = email.trim()
-            if (trimmedEmail.isEmpty()) {
-                emailError = ValidationErrorMessages.EMPTY_EMAIL
-                isValid = false
-            } else if (!isValidEmail(trimmedEmail)) {
-                emailError = ValidationErrorMessages.INVALID_EMAIL
-                isValid = false
-            } else {
-                emailError = ""
-            }
-            
-            if (password.isEmpty()) {
-                passwordError = ValidationErrorMessages.EMPTY_PASSWORD
-                isValid = false
-            } else {
-                passwordError = ""
-            }
+            emailError = if (errorMessage == ValidationErrorMessages.EMPTY_EMAIL || 
+                          errorMessage == ValidationErrorMessages.INVALID_EMAIL) 
+                          errorMessage else ""
+            passwordError = if (errorMessage == ValidationErrorMessages.EMPTY_PASSWORD) 
+                           errorMessage else ""
             
             return isValid
         }
