@@ -22,26 +22,20 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.random.Random
 import org.paystell.app.ui.components.BackButton
 import org.paystell.app.ui.components.EmailInputField
 import org.paystell.app.ui.components.PayStellButton
 import org.paystell.app.ui.theme.PayStellTheme
 import org.paystell.app.ui.theme.SuccessGreen
-import org.paystell.app.utils.ValidationErrorMessages
-import org.paystell.app.utils.isValidEmail
 
 /**
  * Forgot Password screen for PayStell application
@@ -55,70 +49,24 @@ fun ForgotPasswordScreen(
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
         
-        var email by remember { mutableStateOf("") }
-        var emailError by remember { mutableStateOf("") }
+        // Use ViewModel for state management
+        val viewModel = remember { ForgotPasswordViewModel() }
         
-        // UI states
-        var isLoading by remember { mutableStateOf(false) }
-        var showNetworkError by remember { mutableStateOf(false) }
-        var showUnknownEmailError by remember { mutableStateOf(false) }
-        var showSuccessDialog by remember { mutableStateOf(false) }
-        
-        fun validateInputs(): Boolean {
-            val trimmedEmail = email.trim()
-            if (trimmedEmail.isEmpty()) {
-                emailError = ValidationErrorMessages.EMPTY_EMAIL
-                return false
-            } else if (!isValidEmail(trimmedEmail)) {
-                emailError = ValidationErrorMessages.INVALID_EMAIL
-                return false
-            } else if (trimmedEmail == "unknown@example.com") {
-                // Mock check for unknown email
-                showUnknownEmailError = true
-                return false
-            }
-
-            emailError = ""
-            return true
-        }
-        
-        fun handleResetRequest() {
-            if (validateInputs()) {
-                isLoading = true
-                
-                // Simulate network request
-                scope.launch {
-                    try {
-                        // Simulate network delay
-                        delay(1500)
-
-                        // Simulate random network error (20% chance)
-                        if (Random.nextDouble() < 0.2) {
-                            throw Exception("Network error")
-                        }
-
-                        // Success path
-                        showSuccessDialog = true
-                        delay(3000) // Show success message briefly
-                        onResetRequestSent()
-                    } catch (e: Exception) {
-                        // Log the error and show network error dialog
-                        println("Password reset error: ${e.message}") // Replace with proper logging
-                        showNetworkError = true
-                    } finally {
-                        isLoading = false
-                    }
-                }
-            }
-        }
+        // Collect all states from the ViewModel
+        val email by viewModel.email.collectAsState()
+        val emailError by viewModel.emailError.collectAsState()
+        val isLoading by viewModel.isLoading.collectAsState()
+        val showNetworkError by viewModel.showNetworkError.collectAsState()
+        val showUnknownEmailError by viewModel.showUnknownEmailError.collectAsState()
+        val showSuccessDialog by viewModel.showSuccessDialog.collectAsState()
         
         if (showNetworkError) {
             AlertDialog(
-                onDismissRequest = { showNetworkError = false },
+                onDismissRequest = { viewModel.dismissNetworkError() },
                 title = { Text("Connection Error") },
                 text = { Text("We encountered a problem connecting to our servers. Please check your internet connection and try again.") },
                 confirmButton = {
-                    Button(onClick = { showNetworkError = false }) {
+                    Button(onClick = { viewModel.dismissNetworkError() }) {
                         Text("OK")
                     }
                 }
@@ -127,11 +75,11 @@ fun ForgotPasswordScreen(
         
         if (showUnknownEmailError) {
             AlertDialog(
-                onDismissRequest = { showUnknownEmailError = false },
+                onDismissRequest = { viewModel.dismissUnknownEmailError() },
                 title = { Text("Email Not Found") },
                 text = { Text("We couldn't find an account associated with $email. Please check if you entered the correct email address.") },
                 confirmButton = {
-                    Button(onClick = { showUnknownEmailError = false }) {
+                    Button(onClick = { viewModel.dismissUnknownEmailError() }) {
                         Text("OK")
                     }
                 }
@@ -222,10 +170,7 @@ fun ForgotPasswordScreen(
                     
                     EmailInputField(
                         value = email,
-                        onValueChange = { 
-                            email = it
-                            if (emailError.isNotEmpty()) validateInputs()
-                        },
+                        onValueChange = { viewModel.updateEmail(it) },
                         isError = emailError.isNotEmpty(),
                         errorMessage = emailError
                     )
@@ -234,7 +179,7 @@ fun ForgotPasswordScreen(
                     
                     PayStellButton(
                         text = "Send Reset Link",
-                        onClick = { handleResetRequest() },
+                        onClick = { viewModel.submitResetRequest(onResetRequestSent) },
                         enabled = !isLoading
                     )
                     
