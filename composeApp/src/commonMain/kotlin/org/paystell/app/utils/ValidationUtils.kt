@@ -1,13 +1,15 @@
 package org.paystell.app.utils
 
+// Pre-compiled regex pattern for email validation
+private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+
 /**
- * Validates an email address
- * @param email The email to validate
- * @return True if the email is valid, false otherwise
+ * Validate if the given string is a valid email address
+ * @param email String to validate
+ * @return true if the string is a valid email, false otherwise
  */
 fun isValidEmail(email: String): Boolean {
-    val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
-    return email.matches(emailRegex.toRegex())
+    return EMAIL_REGEX.matches(email)
 }
 
 /**
@@ -17,8 +19,7 @@ fun isValidEmail(email: String): Boolean {
  */
 fun isValidPassword(password: String): Boolean {
     // At least 8 characters, one uppercase, one lowercase, one number, one special character
-    val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
-    return password.matches(passwordRegex.toRegex())
+    return password.length >= 8 && password.contains(Regex("(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])"))
 }
 
 /**
@@ -35,9 +36,9 @@ fun doPasswordsMatch(password: String, confirmPassword: String): Boolean {
  * Object containing validation error messages
  */
 object ValidationErrorMessages {
-    const val EMPTY_EMAIL = "Email cannot be empty"
+    const val EMPTY_EMAIL = "Email is required"
     const val INVALID_EMAIL = "Please enter a valid email address"
-    const val EMPTY_PASSWORD = "Password cannot be empty"
-    const val INVALID_PASSWORD = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character"
-    const val PASSWORDS_DONT_MATCH = "Passwords do not match"
+    const val EMPTY_PASSWORD = "Password is required"
+    const val PASSWORD_TOO_SHORT = "Password must be at least 8 characters long"
+    const val PASSWORDS_DO_NOT_MATCH = "Passwords do not match"
 } 

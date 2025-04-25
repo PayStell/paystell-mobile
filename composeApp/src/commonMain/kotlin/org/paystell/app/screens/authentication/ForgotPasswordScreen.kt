@@ -20,7 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,12 +29,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import org.paystell.app.ui.components.BackButton
 import org.paystell.app.ui.components.EmailInputField
 import org.paystell.app.ui.components.PayStellButton
@@ -65,18 +65,19 @@ fun ForgotPasswordScreen(
         var showSuccessDialog by remember { mutableStateOf(false) }
         
         fun validateInputs(): Boolean {
-            if (email.isEmpty()) {
+            val trimmedEmail = email.trim()
+            if (trimmedEmail.isEmpty()) {
                 emailError = ValidationErrorMessages.EMPTY_EMAIL
                 return false
-            } else if (!isValidEmail(email)) {
+            } else if (!isValidEmail(trimmedEmail)) {
                 emailError = ValidationErrorMessages.INVALID_EMAIL
                 return false
-            } else if (email == "unknown@example.com") {
+            } else if (trimmedEmail == "unknown@example.com") {
                 // Mock check for unknown email
                 showUnknownEmailError = true
                 return false
             }
-            
+
             emailError = ""
             return true
         }
@@ -90,12 +91,12 @@ fun ForgotPasswordScreen(
                     try {
                         // Simulate network delay
                         delay(1500)
-                        
+
                         // Simulate random network error (20% chance)
-                        if (Math.random() < 0.2) {
+                        if (Random.nextDouble() < 0.2) {
                             throw Exception("Network error")
                         }
-                        
+
                         // Success path
                         showSuccessDialog = true
                         delay(3000) // Show success message briefly
@@ -117,12 +118,7 @@ fun ForgotPasswordScreen(
                 text = { Text("We encountered a problem connecting to our servers. Please check your internet connection and try again.") },
                 confirmButton = {
                     Button(onClick = { showNetworkError = false }) {
-                        Text("Retry")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showNetworkError = false }) {
-                        Text("Cancel")
+                        Text("OK")
                     }
                 }
             )
@@ -132,7 +128,7 @@ fun ForgotPasswordScreen(
             AlertDialog(
                 onDismissRequest = { showUnknownEmailError = false },
                 title = { Text("Email Not Found") },
-                text = { Text("We couldn't find an account associated with $email. Please check the email address or create a new account.") },
+                text = { Text("We couldn't find an account associated with $email. Please check if you entered the correct email address.") },
                 confirmButton = {
                     Button(onClick = { showUnknownEmailError = false }) {
                         Text("OK")
@@ -144,25 +140,24 @@ fun ForgotPasswordScreen(
         if (showSuccessDialog) {
             AlertDialog(
                 onDismissRequest = { },
-                title = { Text("Reset Email Sent") },
-                text = { 
+                title = { 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            imageVector = Icons.Default.CheckCircle,
+                            imageVector = Icons.Default.Check,
                             contentDescription = "Success",
                             tint = SuccessGreen,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        Text("We've sent password reset instructions to $email")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "Please check your email inbox and follow the instructions to reset your password.",
-                            style = MaterialTheme.typography.body2,
-                            color = Color.Gray
-                        )
+                        Text("Reset Link Sent")
                     }
+                },
+                text = { 
+                    Text(
+                        "We've sent a password reset link to $email. Please check your inbox and follow the instructions.",
+                        textAlign = TextAlign.Center
+                    )
                 },
                 confirmButton = { }
             )
@@ -204,7 +199,7 @@ fun ForgotPasswordScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                     
-                    Spacer(modifier = Modifier.height(44.dp))
+                    Spacer(modifier = Modifier.height(48.dp))
                     
                     Text(
                         text = "Reset Your Password",
@@ -217,7 +212,7 @@ fun ForgotPasswordScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
-                        text = "Enter your email address and we'll send you instructions to reset your password",
+                        text = "Enter your email address and we'll send you a link to reset your password",
                         style = MaterialTheme.typography.body1,
                         textAlign = TextAlign.Center
                     )
@@ -237,15 +232,17 @@ fun ForgotPasswordScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                     
                     PayStellButton(
-                        text = "Reset Password",
+                        text = "Send Reset Link",
                         onClick = { handleResetRequest() },
                         enabled = !isLoading
                     )
                     
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    TextButton(onClick = onBackClick) {
-                        Text("Back to Login")
+                    if (!isLoading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        TextButton(onClick = onBackClick) {
+                            Text("Back to Login")
+                        }
                     }
                 }
             }

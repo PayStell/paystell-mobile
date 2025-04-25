@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import org.paystell.app.ui.components.BackButton
 import org.paystell.app.ui.components.EmailInputField
 import org.paystell.app.ui.components.PasswordInputField
@@ -75,17 +76,18 @@ fun SignUpScreen(
         fun validateInputs(): Boolean {
             var isValid = true
             
-            if (email.isEmpty()) {
+            val trimmedEmail = email.trim()
+            if (trimmedEmail.isEmpty()) {
                 emailError = ValidationErrorMessages.EMPTY_EMAIL
                 isValid = false
-            } else if (!isValidEmail(email)) {
+            } else if (!isValidEmail(trimmedEmail)) {
                 emailError = ValidationErrorMessages.INVALID_EMAIL
                 isValid = false
             } else {
                 emailError = ""
                 
                 // Check for existing email (mock)
-                if (email == "existing@example.com") {
+                if (trimmedEmail == "existing@example.com") {
                     showExistingEmailError = true
                     isValid = false
                 }
@@ -125,7 +127,7 @@ fun SignUpScreen(
                         delay(1500)
                         
                         // Simulate random network error (20% chance)
-                        if (Math.random() < 0.2) {
+                        if (Random.nextDouble() < 0.2) {
                             throw Exception("Network error")
                         }
                         

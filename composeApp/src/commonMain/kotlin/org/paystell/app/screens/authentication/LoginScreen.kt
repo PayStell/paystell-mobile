@@ -69,10 +69,11 @@ fun LoginScreen(
         fun validateInputs(): Boolean {
             var isValid = true
             
-            if (email.isEmpty()) {
+            val trimmedEmail = email.trim()
+            if (trimmedEmail.isEmpty()) {
                 emailError = ValidationErrorMessages.EMPTY_EMAIL
                 isValid = false
-            } else if (!isValidEmail(email)) {
+            } else if (!isValidEmail(trimmedEmail)) {
                 emailError = ValidationErrorMessages.INVALID_EMAIL
                 isValid = false
             } else {
@@ -90,16 +91,34 @@ fun LoginScreen(
         }
         
         fun handleLogin() {
-            if (validateInputs()) {
+            val (isValid, errorMessage) = validateLoginInput(email, password)
+            
+            if (isValid) {
                 // Mock login success for now
+                
+                // Launch navigation and snackbar independently
                 scope.launch {
-                    val message = if (rememberMe) {
+                    val msg = if (rememberMe) {
                         "Login successful! Your session will be remembered."
                     } else {
                         "Login successful!"
                     }
-                    snackbarHostState.showSnackbar(message)
+                    snackbarHostState.showSnackbar(msg)
+                }
+                
+                // Navigate immediately without waiting for snackbar
+                scope.launch {
                     onLoginSuccess()
+                }
+            } else {
+                emailError = if (errorMessage == ValidationErrorMessages.EMPTY_EMAIL || 
+                              errorMessage == ValidationErrorMessages.INVALID_EMAIL) 
+                              errorMessage else ""
+                passwordError = if (errorMessage == ValidationErrorMessages.EMPTY_PASSWORD) 
+                               errorMessage else ""
+                
+                scope.launch {
+                    snackbarHostState.showSnackbar(errorMessage ?: "Unknown error")
                 }
             }
         }
@@ -263,4 +282,25 @@ fun LoginScreen(
             }
         }
     }
+}
+
+/**
+ * Validate login input fields
+ */
+private fun validateLoginInput(email: String, password: String): Pair<Boolean, String?> {
+    val trimmedEmail = email.trim()
+    
+    if (trimmedEmail.isEmpty()) {
+        return Pair(false, ValidationErrorMessages.EMPTY_EMAIL)
+    }
+    
+    if (!isValidEmail(trimmedEmail)) {
+        return Pair(false, ValidationErrorMessages.INVALID_EMAIL)
+    }
+    
+    if (password.isEmpty()) {
+        return Pair(false, ValidationErrorMessages.EMPTY_PASSWORD)
+    }
+    
+    return Pair(true, null)
 } 
