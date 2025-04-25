@@ -38,11 +38,19 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
+            implementation("androidx.compose.material:material-icons-core:1.5.4")
+            implementation("androidx.compose.material:material-icons-extended:1.5.4")
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            // Navigation Compose for route-based navigation
+            implementation("androidx.navigation:navigation-compose:2.7.7")
+            // Add the kotlin stdlib explicitly
+            implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+            // Add kotlinx.coroutines
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
         }
     }
 }
