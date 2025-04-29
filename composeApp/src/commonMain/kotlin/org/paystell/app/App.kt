@@ -1,21 +1,24 @@
 package org.paystell.app
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
-import androidx.compose.material3.icons.Icons
-import androidx.compose.material3.icons.filled.Home
-import androidx.compose.material3.icons.filled.List
-import androidx.compose.material3.icons.filled.Send
-import androidx.compose.material3.icons.filled.Settings
-import androidx.compose.material3.icons.outlined.Home
-import androidx.compose.material3.icons.outlined.List
-import androidx.compose.material3.icons.outlined.Send
-import androidx.compose.material3.icons.outlined.Settings
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.Send
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -103,36 +106,28 @@ fun BottomNavigationBar(selectedItem: BottomNavItem, onItemSelected: (BottomNavI
 
 @Composable
 fun HomeScreen() {
-    Box(modifier = Modifier.fillMaxSize().semantics { contentDescription = "Home Screen Content" }) {
-        Text("Home Screen")
-    }
+    Text("Home Screen")
 }
 
 @Composable
 fun TransactionsScreen() {
-    Box(modifier = Modifier.fillMaxSize().semantics { contentDescription = "Transactions Screen Content" }) {
-        Text("Transactions Screen")
-    }
+    Text("Transactions Screen")
 }
 
 @Composable
 fun SendReceiveScreen() {
-    Box(modifier = Modifier.fillMaxSize().semantics { contentDescription = "Send and Receive Screen Content" }) {
-        Text("Send/Receive Screen")
-    }
+    Text("Send/Receive Screen")
 }
 
 @Composable
 fun SettingsScreen() {
-    Box(modifier = Modifier.fillMaxSize().semantics { contentDescription = "Settings Screen Content" }) {
-        Text("Settings Screen")
-    }
+    Text("Settings Screen")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    var selectedItem by rememberSaveable { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
+    var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
 
     MaterialTheme(colorScheme = lightColorScheme()) {
         Scaffold(
@@ -140,12 +135,28 @@ fun App() {
                 BottomNavigationBar(selectedItem = selectedItem, onItemSelected = { selectedItem = it })
             }
         ) { innerPadding ->
-            Crossfade(targetState = selectedItem) { screen ->
-                when (screen) {
-                    is BottomNavItem.Home -> HomeScreen()
-                    is BottomNavItem.Transactions -> TransactionsScreen()
-                    is BottomNavItem.SendReceive -> SendReceiveScreen()
-                    is BottomNavItem.Settings -> SettingsScreen()
+            AnimatedContent(
+                targetState = selectedItem,
+                transitionSpec = { fadeIn(tween(300)) with scaleOut(tween(300)) }
+            ) { screen ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .semantics { contentDescription = when (screen) {
+                            is BottomNavItem.Home -> "Home Screen Content"
+                            is BottomNavItem.Transactions -> "Transactions Screen Content"
+                            is BottomNavItem.SendReceive -> "Send and Receive Screen Content"
+                            is BottomNavItem.Settings -> "Settings Screen Content"
+                            else -> ""
+                        }}
+                ) {
+                    when (screen) {
+                        is BottomNavItem.Home -> HomeScreen()
+                        is BottomNavItem.Transactions -> TransactionsScreen()
+                        is BottomNavItem.SendReceive -> SendReceiveScreen()
+                        is BottomNavItem.Settings -> SettingsScreen()
+                    }
                 }
             }
         }
