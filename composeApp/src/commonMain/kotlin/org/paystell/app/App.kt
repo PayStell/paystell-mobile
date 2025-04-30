@@ -110,7 +110,11 @@ fun HomeScreen() {
     Text("Home Screen")
 }
 
-@Composable
+
+/**
+ * Main entry point to the PayStell application
+ */
+
 fun TransactionsScreen() {
     Text("Transactions Screen")
 }
