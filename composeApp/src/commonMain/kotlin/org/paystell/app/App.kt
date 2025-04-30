@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.with
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,32 +37,32 @@ sealed class BottomNavItem(
     object Home : BottomNavItem(
         "home",
         "Home",
-        { Icon(Icons.Filled.Home, contentDescription = null) },
-        { Icon(Icons.Outlined.Home, contentDescription = null) },
+        { Icon(Icons.Filled.Home, contentDescription = "Home") },
+        { Icon(Icons.Outlined.Home, contentDescription = "Home") },
         "Home"
     )
 
     object Transactions : BottomNavItem(
         "transactions",
         "Transactions",
-        { Icon(Icons.Filled.List, contentDescription = null) },
-        { Icon(Icons.Outlined.List, contentDescription = null) },
+        { Icon(Icons.Filled.List, contentDescription = "Transactions") },
+        { Icon(Icons.Outlined.List, contentDescription = "Transactions") },
         "Transactions"
     )
 
     object SendReceive : BottomNavItem(
         "send_receive",
         "Send/Receive",
-        { Icon(Icons.Filled.Send, contentDescription = null) },
-        { Icon(Icons.Outlined.Send, contentDescription = null) },
+        { Icon(Icons.Filled.Send, contentDescription = "Send and Receive") },
+        { Icon(Icons.Outlined.Send, contentDescription = "Send and Receive") },
         "Send and Receive"
     )
 
     object Settings : BottomNavItem(
         "settings",
         "Settings",
-        { Icon(Icons.Filled.Settings, contentDescription = null) },
-        { Icon(Icons.Outlined.Settings, contentDescription = null) },
+        { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
+        { Icon(Icons.Outlined.Settings, contentDescription = "Settings") },
         "Settings"
     )
 }
@@ -129,7 +130,7 @@ fun SettingsScreen() {
 fun App() {
     var selectedItem by remember { mutableStateOf<BottomNavItem>(BottomNavItem.Home) }
 
-    MaterialTheme(colorScheme = lightColorScheme()) {
+    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(selectedItem = selectedItem, onItemSelected = { selectedItem = it })
