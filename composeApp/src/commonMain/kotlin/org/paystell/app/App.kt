@@ -105,28 +105,26 @@ fun BottomNavigationBar(selectedItem: BottomNavItem, onItemSelected: (BottomNavI
     }
 }
 
+import org.paystell.app.screens.home.HomeScreen
+
 @Composable
-fun HomeScreen() {
-    Text("Home Screen")
-}
-
-
-/**
- * Main entry point to the PayStell application
- */
-
-fun TransactionsScreen() {
-    Text("Transactions Screen")
+fun HomeScreenPlaceholder() {
+    Text("Transactions Screen Placeholder")
 }
 
 @Composable
-fun SendReceiveScreen() {
-    Text("Send/Receive Screen")
+fun TransactionsScreenPlaceholder() {
+    Text("Transactions Screen Placeholder")
 }
 
 @Composable
-fun SettingsScreen() {
-    Text("Settings Screen")
+fun SendReceiveScreenPlaceholder() {
+    Text("Send/Receive Screen Placeholder")
+}
+
+@Composable
+fun SettingsScreenPlaceholder() {
+    Text("Settings Screen Placeholder")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,9 +156,9 @@ fun App() {
                 ) {
                     when (screen) {
                         is BottomNavItem.Home -> HomeScreen()
-                        is BottomNavItem.Transactions -> TransactionsScreen()
-                        is BottomNavItem.SendReceive -> SendReceiveScreen()
-                        is BottomNavItem.Settings -> SettingsScreen()
+                        is BottomNavItem.Transactions -> TransactionsScreenPlaceholder()
+                        is BottomNavItem.SendReceive -> SendReceiveScreenPlaceholder()
+                        is BottomNavItem.Settings -> SettingsScreenPlaceholder()
                     }
                 }
             }
