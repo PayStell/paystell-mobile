@@ -97,7 +97,7 @@ fun SignUpScreen(
                 passwordError = ValidationErrorMessages.EMPTY_PASSWORD
                 isValid = false
             } else if (!isValidPassword(password)) {
-                passwordError = ValidationErrorMessages.INVALID_PASSWORD
+                passwordError = ValidationErrorMessages.PASSWORD_TOO_SHORT
                 isValid = false
             } else {
                 passwordError = ""
@@ -107,7 +107,7 @@ fun SignUpScreen(
                 confirmPasswordError = ValidationErrorMessages.EMPTY_PASSWORD
                 isValid = false
             } else if (!doPasswordsMatch(password, confirmPassword)) {
-                confirmPasswordError = ValidationErrorMessages.PASSWORDS_DONT_MATCH
+                confirmPasswordError = ValidationErrorMessages.PASSWORDS_DO_NOT_MATCH
                 isValid = false
             } else {
                 confirmPasswordError = ""
