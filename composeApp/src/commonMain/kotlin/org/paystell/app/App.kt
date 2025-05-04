@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import org.paystell.app.screens.home.HomeScreen
 
 // Define the navigation items with Material 3 icons and labels
 sealed class BottomNavItem(
@@ -104,8 +105,6 @@ fun BottomNavigationBar(selectedItem: BottomNavItem, onItemSelected: (BottomNavI
         }
     }
 }
-
-import org.paystell.app.screens.home.HomeScreen
 
 @Composable
 fun HomeScreenPlaceholder() {
